@@ -15,3 +15,5 @@ This program is intended for responsible use on your own systems for legitimate 
 By using this program and accessing this content, you acknowledge and agree that you understand these risks and limitations. You accept full responsibility for your actions and agree not to use this program for any unlawful or unethical purpose. The creators and distributors of this program and content disclaim all liability for any misuse or damage caused by its use.
 
 ## Always respect privacy, ownership, and the law.
+
+### IN OTHER WORDS, I AM NOT RESPONSIBLE FOR THE DUMB STUNTS YOU DECIDE TO PULL, YOU (AND ONLY YOU) ARE RESPONSIBLE!
