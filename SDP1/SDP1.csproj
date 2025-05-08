@@ -4,7 +4,7 @@
     <OutputType>WinExe</OutputType>
     <PublishSingleFile>true</PublishSingleFile>
     <SelfContained>true</SelfContained>
-    <RuntimeIdentifier>win-x64</RuntimeIdentifier> 
+    <RuntimeIdentifier>win-x86</RuntimeIdentifier> 
     <TargetFramework>net6.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>

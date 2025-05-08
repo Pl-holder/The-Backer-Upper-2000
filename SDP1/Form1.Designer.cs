@@ -52,7 +52,7 @@
             this.Controls.Add(this.lblStatus);
             this.Controls.Add(this.txtBackupFolder);
 
-            this.Name = "SDP1";
+            this.Name = "The Backer Upper 2000";
             this.Text = "The Backer Upper 2000";
             this.ResumeLayout(false);
             this.PerformLayout();

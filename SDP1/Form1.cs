@@ -31,6 +31,15 @@ namespace SDP1
         private int originalButtonWidth;
         private int originalButtonHeight;
 
+        private System.Windows.Forms.CheckBox includeDownloadsCheckbox;
+        private System.Windows.Forms.CheckBox includeAppDataCheckbox;
+
+        // Explicitly specify System.Windows.Forms.Timer
+        private System.Windows.Forms.Timer timerDisclaimer;
+        private Label lblCountdown;
+        private int countdownSeconds = 30;
+
+
         public SDP1()
         {
             InitializeComponent();
@@ -98,6 +107,21 @@ namespace SDP1
             this.userDropdown.Size = new System.Drawing.Size((int)(originalButtonWidth * 1.5), originalButtonHeight);
             this.Controls.Add(this.userDropdown);
 
+            this.includeDownloadsCheckbox = new System.Windows.Forms.CheckBox();
+            this.includeDownloadsCheckbox.Name = "includeDownloadsCheckbox";
+            this.includeDownloadsCheckbox.AutoSize = true;
+            this.includeDownloadsCheckbox.Text = "Include Downloads Folder";
+            this.includeDownloadsCheckbox.UseVisualStyleBackColor = true;
+            this.Controls.Add(this.includeDownloadsCheckbox);
+
+            this.includeAppDataCheckbox = new System.Windows.Forms.CheckBox();
+            this.includeAppDataCheckbox.Name = "includeAppDataCheckbox";
+            this.includeAppDataCheckbox.AutoSize = true;
+            this.includeAppDataCheckbox.Text = "Include AppData Folder";
+            this.includeAppDataCheckbox.UseVisualStyleBackColor = true;
+            this.Controls.Add(this.includeAppDataCheckbox);
+
+
             int horizontalSpacing = 10;
             int verticalSpacing = 10;
             int controlHeight = originalButtonHeight;
@@ -114,7 +138,14 @@ namespace SDP1
                 userDropdown.Location = new System.Drawing.Point(10, topRowTop);
             }
             backupSelectedUserButton.Location = new System.Drawing.Point(userDropdown.Right + horizontalSpacing, topRowTop);
-            int mainButtonRowTop = Math.Max(userDropdown.Bottom, backupSelectedUserButton.Bottom) + verticalSpacing;
+
+            int checkboxRowTop = Math.Max(userDropdown.Bottom, backupSelectedUserButton.Bottom) + verticalSpacing;
+            includeDownloadsCheckbox.Location = new System.Drawing.Point(userDropdown.Left, checkboxRowTop);
+            includeAppDataCheckbox.Location = new System.Drawing.Point(includeDownloadsCheckbox.Right + horizontalSpacing, checkboxRowTop);
+
+
+            int mainButtonRowTop = Math.Max(includeDownloadsCheckbox.Bottom, includeAppDataCheckbox.Bottom) + verticalSpacing;
+
             int totalMainButtonWidth = (goButton.Width + backupCurrentUserButton.Width + restoreButton.Width) + (horizontalSpacing * 2);
             int startLeftPosition = (this.ClientSize.Width - totalMainButtonWidth) / 2;
             if (startLeftPosition < 10) startLeftPosition = 10;
@@ -182,6 +213,18 @@ Always respect privacy, ownership, and the law.";
             this.btnDisagree.Click += new EventHandler(btnDisagree_Click);
             this.disclaimerPanel.Controls.Add(this.btnDisagree);
 
+            this.lblCountdown = new Label();
+            this.lblCountdown.Name = "lblCountdown";
+            this.lblCountdown.AutoSize = true;
+            this.lblCountdown.Text = $"Please wait: {countdownSeconds} seconds";
+            this.disclaimerPanel.Controls.Add(this.lblCountdown);
+
+            // Explicitly specify System.Windows.Forms.Timer
+            this.timerDisclaimer = new System.Windows.Forms.Timer();
+            this.timerDisclaimer.Interval = 1000; // 1 second
+            this.timerDisclaimer.Tick += new EventHandler(timerDisclaimer_Tick);
+
+
             int padding = 10;
             int buttonWidth = 100;
             int buttonHeight = 30;
@@ -197,9 +240,12 @@ Always respect privacy, ownership, and the law.";
             this.btnDisagree.Size = new Size(buttonWidth, buttonHeight);
             this.btnDisagree.Location = new Point(this.btnAgree.Left - buttonWidth - padding, buttonsTop);
 
+            this.lblCountdown.Location = new Point(padding, buttonsTop + buttonHeight + padding);
+
+
             this.disclaimerPanel.ClientSize = new Size(
                 Math.Max(this.lblDisclaimer.Right, this.btnAgree.Right) + padding,
-                this.btnAgree.Bottom + padding
+                this.lblCountdown.Bottom + padding
             );
 
             disclaimerPanel.Location = new Point(
@@ -207,7 +253,25 @@ Always respect privacy, ownership, and the law.";
                (this.ClientSize.Height - disclaimerPanel.Height) / 2
            );
 
+            btnAgree.Enabled = false;
+            timerDisclaimer.Start();
+
             SetMainControlsEnabled(false);
+        }
+
+        private void timerDisclaimer_Tick(object sender, EventArgs e)
+        {
+            countdownSeconds--;
+            if (countdownSeconds <= 0)
+            {
+                timerDisclaimer.Stop();
+                btnAgree.Enabled = true;
+                lblCountdown.Text = "You may now agree.";
+            }
+            else
+            {
+                lblCountdown.Text = $"Please wait: {countdownSeconds} seconds";
+            }
         }
 
         private void btnAgree_Click(object sender, EventArgs e)
@@ -243,6 +307,8 @@ Always respect privacy, ownership, and the law.";
             if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = enabled;
             if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = enabled;
             if (userDropdown != null) userDropdown.Enabled = enabled;
+            if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = enabled;
+            if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = enabled;
         }
 
         private bool IsAdministrator()
@@ -321,6 +387,9 @@ Always respect privacy, ownership, and the law.";
             if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = false;
             if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = false;
             if (userDropdown != null) userDropdown.Enabled = false;
+            if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = false;
+            if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = false;
+
 
             try
             {
@@ -423,6 +492,8 @@ Always respect privacy, ownership, and the law.";
                 if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = true;
                 if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = true;
                 if (userDropdown != null) userDropdown.Enabled = true;
+                if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = true;
+                if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = true;
             }
         }
 
@@ -448,6 +519,9 @@ Always respect privacy, ownership, and the law.";
             if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = false;
             if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = false;
             if (userDropdown != null) userDropdown.Enabled = false;
+            if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = false;
+            if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = false;
+
 
             try
             {
@@ -520,6 +594,8 @@ Always respect privacy, ownership, and the law.";
                 if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = true;
                 if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = true;
                 if (userDropdown != null) userDropdown.Enabled = true;
+                if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = true;
+                if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = true;
             }
         }
 
@@ -560,6 +636,9 @@ Always respect privacy, ownership, and the law.";
             if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = false;
             if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = false;
             if (userDropdown != null) userDropdown.Enabled = false;
+            if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = false;
+            if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = false;
+
 
             try
             {
@@ -567,7 +646,17 @@ Always respect privacy, ownership, and the law.";
 
                 await Task.Run(() =>
                 {
-                    var excludedFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "AppData", "Downloads" };
+                    var excludedFolders = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                    if (includeDownloadsCheckbox != null && !includeDownloadsCheckbox.Checked)
+                    {
+                        excludedFolders.Add("Downloads");
+                    }
+                    if (includeAppDataCheckbox != null && !includeAppDataCheckbox.Checked)
+                    {
+                        excludedFolders.Add("AppData");
+                    }
+
+
                     var topLevelUserDirs = Directory.GetDirectories(selectedUserProfilePath, "*", SearchOption.TopDirectoryOnly);
                     int totalSteps = topLevelUserDirs.Count(d => !excludedFolders.Contains(Path.GetFileName(d)));
                     int currentStep = 0;
@@ -614,7 +703,7 @@ Always respect privacy, ownership, and the law.";
             catch (UnauthorizedAccessException uaEx)
             {
                 UpdateStatus($"Permission Error: Could not access user data for {selectedUsername}. Please ensure the application is run as Administrator.");
-                MessageBox.Show($"Permission denied: {uaEx.Message}\nPlease ensure you have write permissions to '{selectedUserBackupSubfolderPath}' and read permissions to the selected user's profile folders.", "Permission Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Permission denied: {uaEx.Message}\nPlease ensure you have write permissions to '{selectedUserBackupSubfolderPath}' and read permissions to the selected user's profile folders, or run the application as Administrator.", "Permission Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             catch (Exception ex)
             {
@@ -628,6 +717,8 @@ Always respect privacy, ownership, and the law.";
                 if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = true;
                 if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = true;
                 if (userDropdown != null) userDropdown.Enabled = true;
+                if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = true;
+                if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = true;
             }
         }
 
@@ -660,6 +751,9 @@ Always respect privacy, ownership, and the law.";
             if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = false;
             if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = false;
             if (userDropdown != null) userDropdown.Enabled = false;
+            if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = false;
+            if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = false;
+
 
             try
             {
@@ -688,26 +782,20 @@ Always respect privacy, ownership, and the law.";
 
                         try
                         {
-                            // Attempt to parse filename to determine original location
                             string[] parts = fileName.Split('_', '.');
                             if (parts.Length >= 4)
                             {
                                 string browserName = parts[0];
                                 string dataType = parts[1];
                                 string profileName = parts[2];
-                                // Assuming username is parts[3] and extension is parts[4]
 
                                 string originalFilePath = null;
 
-                                // Simplified mapping based on backup structure
                                 if (browserName.Contains("Firefox"))
                                 {
                                     string firefoxProfilesDir = Path.Combine(userRoamingAppData, "Mozilla", browserName.Replace("Firefox", "").Trim(), "Profiles", profileName);
                                     if (dataType == "History" || dataType == "Bookmarks")
                                     {
-                                        // Note: Restoring CSV to SQLite requires more complex logic.
-                                        // This simplified version would ideally restore the original .sqlite file if backed up directly.
-                                        // For now, we'll target the expected location of the original file type.
                                         originalFilePath = Path.Combine(firefoxProfilesDir, "places.sqlite");
                                     }
                                     else if (dataType == "Cookies")
@@ -718,12 +806,11 @@ Always respect privacy, ownership, and the law.";
                                     {
                                         originalFilePath = Path.Combine(firefoxProfilesDir, "formhistory.sqlite");
                                     }
-                                    // Credit Cards are complex and not handled by simple file copy
                                 }
-                                else // Assuming Chromium-based
+                                else
                                 {
                                     string chromiumUserDataDir = Path.Combine(userLocalAppData, GetChromiumSoftwareFolder(browserName), browserName.Replace("_Stable", "").Replace("_Beta", "").Replace("_Dev", "").Replace("_Canary", ""), "User Data", profileName);
-                                    if (browserName.Contains("Opera")) // Opera paths are different
+                                    if (browserName.Contains("Opera"))
                                     {
                                         chromiumUserDataDir = Path.Combine(userRoamingAppData, "Opera Software", browserName.Replace("_GX", "") + " Stable", profileName);
                                     }
@@ -740,7 +827,7 @@ Always respect privacy, ownership, and the law.";
                                     else if (dataType == "Cookies")
                                     {
                                         originalFilePath = Path.Combine(chromiumUserDataDir, "Network", "Cookies");
-                                        if (!File.Exists(originalFilePath)) // Fallback for older versions
+                                        if (!File.Exists(originalFilePath))
                                         {
                                             originalFilePath = Path.Combine(chromiumUserDataDir, "Cookies");
                                         }
@@ -749,7 +836,6 @@ Always respect privacy, ownership, and the law.";
                                     {
                                         originalFilePath = Path.Combine(chromiumUserDataDir, "Web Data");
                                     }
-                                    // Passwords are complex and not handled by simple file copy
                                 }
 
                                 if (originalFilePath != null)
@@ -760,8 +846,7 @@ Always respect privacy, ownership, and the law.";
                                         Directory.CreateDirectory(originalDir);
                                     }
 
-                                    // Copy the backup file to the original location
-                                    File.Copy(backupFile, originalFilePath, true); // Overwrite existing file
+                                    File.Copy(backupFile, originalFilePath, true);
                                     statusReporter?.Report($"Restored {fileName} to {originalFilePath}");
                                 }
                                 else
@@ -809,6 +894,8 @@ Always respect privacy, ownership, and the law.";
                 if (backupCurrentUserButton != null) backupCurrentUserButton.Enabled = true;
                 if (backupSelectedUserButton != null) backupSelectedUserButton.Enabled = true;
                 if (userDropdown != null) userDropdown.Enabled = true;
+                if (includeDownloadsCheckbox != null) includeDownloadsCheckbox.Enabled = true;
+                if (includeAppDataCheckbox != null) includeAppDataCheckbox.Enabled = true;
             }
         }
 
